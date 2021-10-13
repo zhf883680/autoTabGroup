@@ -36,7 +36,7 @@ function createGroup(tab) {
                 let domain = "";
                 //针对设置页面特殊处理
                 if (urlHead == "edge:" || urlHead == "chrome:") {
-                    domain =urlHead.substring(0,urlHead.length-1);
+                    domain = "~" + urlHead.substring(0, urlHead.length - 1);
                 } else if (urlHead == "http:" || urlHead == "https:") {
                     //正常页面
                     const domainArr = host.split(".")
@@ -48,18 +48,18 @@ function createGroup(tab) {
                         domain = `${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
                         //特殊处理
                         //例如谷歌搜索,百度搜索为一类 其他为另一类
-                        if (tab.url.indexOf("www.google.com")>-1||tab.url.indexOf("www.baidu.com")>-1) {
+                        if (tab.url.indexOf("www.google.com") > -1 || tab.url.indexOf("www.baidu.com") > -1) {
                             //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
-                            domain = "search"
+                            domain = "~ search"
                         }
                     }
                 } else {
-                    domain = "UnKnow"
+                    domain = "~UnKnow"
                 }
                 //检查是否有旧group
                 const nowGroup = groups.find(a => a.title == domain);
 
-                //无旧组件
+                //无旧组
                 if (nowGroup == undefined) {
                     chrome.tabs.group({
                         createProperties: {
@@ -72,13 +72,32 @@ function createGroup(tab) {
                             color: colors[parseInt(Math.random() * 10)],
                             title: domain,
                         });
+                        //将组别排序
+                        //系统级别最先
+                        //其次是搜索
+                        //其次从a-z排序
+                        chrome.tabGroups.query({
+                            windowId: currentWindow.id
+                        }).then((groups) => {
+                            let nowGroup = JSON.parse(JSON.stringify(groups));
+                            nowGroup.sort(sortBy("title", false, String))
+                            for (let i = 0; i < nowGroup.length; i++) {
+                                chrome.tabGroups.move(nowGroup[i].id, {
+                                    index: -1,
+                                    windowId: currentWindow.id
+                                });
+
+                            }
+                        })
                     })
                 } else {
+                    //有就组
                     chrome.tabs.group({
                         groupId: nowGroup.id,
                         tabIds: tab.id
                     })
                 }
+
 
             } catch (e) {
                 console.error(e)
@@ -86,3 +105,22 @@ function createGroup(tab) {
         })
     });
 }
+//排序函数
+var sortBy = function (filed, rev, primer) {
+    rev = (rev) ? -1 : 1;
+    return function (a, b) {
+        a = a[filed];
+        b = b[filed];
+        if (typeof (primer) != 'undefined') {
+            a = primer(a);
+            b = primer(b);
+        }
+        if (a < b) {
+            return rev * -1;
+        }
+        if (a > b) {
+            return rev * 1;
+        }
+        return 1;
+    }
+};
