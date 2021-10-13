@@ -17,7 +17,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 });
 const colors = ["grey", "blue", "yellow", "red", "green", "pink", "purple", "cyan", "green", "blue", "grey"]
 const specialUrl = ["google.com", "baidu.com"] //特殊处理的地址
-async function createGroup(tab) {
+function createGroup(tab) {
     //获取窗口id 防止乱跳
     chrome.windows.getCurrent(function (currentWindow) {
         //获取当前所有标签组
@@ -36,7 +36,7 @@ async function createGroup(tab) {
                 let domain = "";
                 //针对设置页面特殊处理
                 if (urlHead == "edge:" || urlHead == "chrome:") {
-                    domain = "浏览器";
+                    domain =urlHead.substring(0,urlHead.length-1);
                 } else if (urlHead == "http:" || urlHead == "https:") {
                     //正常页面
                     const domainArr = host.split(".")
@@ -53,7 +53,7 @@ async function createGroup(tab) {
                         }
                     }
                 } else {
-                    domain = "特殊";
+                    domain = "UnKnow"
                 }
                 //检查是否有旧group
                 const nowGroup = groups.find(a => a.title == domain);
@@ -82,10 +82,6 @@ async function createGroup(tab) {
             } catch (e) {
                 console.error(e)
             }
-
         })
-
     });
-
-
 }

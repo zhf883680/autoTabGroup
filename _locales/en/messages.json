@@ -1,0 +1,11 @@
+{
+    "appName": {
+        "message": "autoSetTabGroup"
+    },
+    "extDesc": {
+        "message": "This is an add-on that automatically splits browser tabs into different tab groups"
+    },
+    "extMore": {
+        "message": "autoSetTabGroup"
+    }
+}
