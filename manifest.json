@@ -1,11 +1,20 @@
 {
     "name": "autoTabGroup",
     "version": "1.0",
+    "icons": {
+        "16": "img/robot.png",
+        "48": "img/robot.png",
+        "128": "img/robot.png"
+    },
+    "description": "标签页自动分组",
     "manifest_version": 3,
     "background": {
       "service_worker": "background.js"
     },
-    "action": {},
+    "action": {
+        "default_title": "自动分组标签页",
+        "default_icon": "img/robot.png"
+    },
     "permissions":[
         "tabGroups","tabs"
     ]
