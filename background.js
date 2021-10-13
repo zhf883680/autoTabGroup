@@ -16,7 +16,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
 });
 const colors = ["grey", "blue", "yellow", "red", "green", "pink", "purple", "cyan", "green", "blue", "grey"]
-const specialUrl = ["google.com", "baidu.com"] //特殊处理的地址
+//const specialUrl = ["www.google.com", "www.baidu.com"] //特殊处理的地址
 function createGroup(tab) {
     //获取窗口id 防止乱跳
     chrome.windows.getCurrent(function (currentWindow) {
@@ -47,9 +47,10 @@ function createGroup(tab) {
 
                         domain = `${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
                         //特殊处理
-                        //例如谷歌邮件 谷歌搜索之类
-                        if (specialUrl.find(a => a == domain) != undefined) {
-                            domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
+                        //例如谷歌搜索,百度搜索为一类 其他为另一类
+                        if (tab.url.indexOf("www.google.com")>-1||tab.url.indexOf("www.baidu.com")>-1) {
+                            //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
+                            domain = "search"
                         }
                     }
                 } else {
