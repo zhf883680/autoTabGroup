@@ -1,5 +1,5 @@
 ## 效果图
-![效果图片](./demoImg/main.jpg)
+![效果图片](./readme/effects.gif)
 
 ## 使用  
 git 下载此项目  
