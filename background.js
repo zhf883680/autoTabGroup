@@ -16,7 +16,39 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 
 });
 const colors = ["grey", "blue", "yellow", "red", "green", "pink", "purple", "cyan", "green", "blue", "grey"]
-const specialUrl = ["google.com", "baidu.com"] //特殊处理的地址
+let specialUrl = [];
+chrome.storage.sync.get('specialUrl', (data) => {
+    if(data!=undefined){
+        specialUrl=data;
+    }
+    if (!data.google) {
+        specialUrl.push("google.com");
+    }
+    if (!data.baidu) {
+        specialUrl.push("baidu.com");
+    }
+});
+
+//监听变化
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    for (let [key, {
+            oldValue,
+            newValue
+        }] of Object.entries(changes)) {
+        if (key == "specialUrl") {
+            specialUrl = [];
+            if (!newValue["google"]) {
+                specialUrl.push("google.com");
+            }
+            if (!newValue["baidu"]) {
+                specialUrl.push("baidu.com");
+            }
+        }
+    }
+});
+
+
+
 function createGroup(tab) {
     //获取窗口id 防止乱跳
     chrome.windows.getCurrent(function (currentWindow) {
@@ -36,7 +68,7 @@ function createGroup(tab) {
                 let domain = "";
                 //针对设置页面特殊处理
                 if (urlHead == "edge:" || urlHead == "chrome:") {
-                    domain =urlHead.substring(0,urlHead.length-1);
+                    domain = urlHead.substring(0, urlHead.length - 1);
                 } else if (urlHead == "http:" || urlHead == "https:") {
                     //正常页面
                     const domainArr = host.split(".")

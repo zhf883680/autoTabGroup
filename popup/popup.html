@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        width: 200px;
+    }
+</style>
+
+<body>
+    <p>
+        <input type="checkbox" id="checkGoogle">
+        <label for="checkGoogle">google.com</label>
+    </p>
+    <p>
+        <input type="checkbox" id="checkBaidu">
+        <label for="checkGoogle">baidu.com</label>
+    </p>
+    <script>
+        let specialUrl;
+        chrome.storage.sync.get('specialUrl', (data) => {
+            specialUrl=data;
+            if (data.google) {
+                document.getElementById("checkGoogle").checked = true;
+            }
+            if (data.baidu) {
+                document.getElementById("checkGoogle").checked = true;
+            }
+        });
+        document.getElementById("checkGoogle").addEventListener("change", function () {
+            specialUrl.google=this.checked;
+            chrome.storage.sync.set({specialUrl});
+        })
+        document.getElementById("checkBaidu").addEventListener("change", function () {
+            specialUrl.baidu=this.checked;
+            chrome.storage.sync.set({specialUrl});
+        })
+    </script>
+</body>
+
+</html>

@@ -13,10 +13,11 @@
     },
     "action": {
         "default_title": "__MSG_extMore__",
-        "default_icon": "img/robot.png"
+        "default_icon": "img/robot.png",
+        "default_options": "popup/popup.html"
     },
     "permissions":[
-        "tabGroups","tabs"
+        "tabGroups","tabs","storage"
     ],
     "default_locale":"zh_CN"
   }
