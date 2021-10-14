@@ -32,7 +32,7 @@ function createGroup(tab) {
                 const urlHead = tab.url.split("/")[0];
                 console.log(urlHead)
                 //获取tab对应的域名
-                const host = tab.url.split("/")[2];
+                const host = tab.url.split("/")[2].split(":")[0];
                 let domain = "";
                 //针对设置页面特殊处理
                 if (urlHead == "edge:" || urlHead == "chrome:") {
