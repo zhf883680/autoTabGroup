@@ -52,7 +52,8 @@ function createGroup(tab) {
                             //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
                             domain = "~ search"
                         }
-                        if(domain=="com.cn"){
+                        //org.cn  com.cn之类统一处理
+                        if(domainArr[domainArr.length-1]=="cn"&&domainArr.length>3){
                             domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}`;
                         }
                     }
