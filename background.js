@@ -52,6 +52,9 @@ function createGroup(tab) {
                             //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
                             domain = "~ search"
                         }
+                        if(domain=="com.cn"){
+                            domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}`;
+                        }
                     }
                 } else {
                     domain = "~UnKnow"
