@@ -35,7 +35,7 @@ function createGroup(tab) {
                 const host = tab.url.split("/")[2].split(":")[0];
                 let domain = "";
                 //针对设置页面特殊处理
-                if (urlHead == "edge:" || urlHead == "chrome:" || urlHead == "extension:") {
+                if (urlHead == "edge:" || urlHead == "chrome:" || urlHead.indexOf("extension")>-1) {
                     domain = "~" + urlHead.substring(0, urlHead.length - 1);
                 } else if (urlHead == "http:" || urlHead == "https:") {
                     //正常页面
