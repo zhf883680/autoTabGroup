@@ -24,19 +24,22 @@ function createGroup(tab) {
         chrome.tabGroups.query({
             windowId: currentWindow.id
         }, function (groups) {
-
+            console.debug(tab);
+            if(tab.pinned){
+                return;
+            }
             if (tab.url == "") {
                 return;
             }
             try {
                 const urlHead = tab.url.split("/")[0];
-                console.log(urlHead)
+                console.debug(urlHead)
                 //获取tab对应的域名
                 const host = tab.url.split("/")[2].split(":")[0];
                 let domain = "";
                 //针对设置页面特殊处理
-                if (urlHead == "edge:" || urlHead == "chrome:" || urlHead.indexOf("extension:")>-1||urlHead.indexOf("file:")>-1) {
-                    domain = "~" + urlHead.substring(0, urlHead.length - 1);
+                if (urlHead == "edge:" || urlHead == "chrome:" || urlHead.indexOf("extension:") > -1 || urlHead.indexOf("file:") > -1) {
+                    domain = "~ " + urlHead.substring(0, urlHead.length - 1);
                 } else if (urlHead == "http:" || urlHead == "https:") {
                     //正常页面
                     const domainArr = host.split(".")
@@ -53,12 +56,12 @@ function createGroup(tab) {
                             domain = "~ search"
                         }
                         //org.cn  com.cn之类统一处理
-                        if(domainArr[domainArr.length-1]=="cn"&&domainArr.length>3){
+                        if (domainArr[domainArr.length - 1] == "cn" && domainArr.length > 3) {
                             domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}`;
                         }
                     }
                 } else {
-                    domain = "~UnKnow"
+                    domain = "~ UnKnow"
                 }
                 //检查是否有旧group
                 const nowGroup = groups.find(a => a.title == domain);
@@ -128,3 +131,48 @@ var sortBy = function (filed, rev, primer) {
         return 1;
     }
 };
+// var allLiveGroups = [];
+// //保存
+// function addGroup() {
+//     allLiveGroups.push(data);
+//     chrome.tabs.create({
+//         tabIds: tab.id
+//     }).then((tab) => {
+//         chrome.tabs.group({
+//             tabIds: tab.id
+//         }).then((groupId) => {
+//             chrome.tabGroups.update(groupId, {
+//                 color: colors[parseInt(Math.random() * 10)],
+//                 title: data.groupName,
+//             });
+//         })
+//     })
+//     //about:blank
+//     saveAllLiveGroup();
+// }
+// //针对数组操作
+
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//     // 2. A page requested user data, respond with a copy of `user`
+//     if (message === 'deleteGroup') {
+//         allLiveGroups.splice(allLiveGroups.findIndex(item => item.id == data.id), 1);
+//         saveAllLiveGroup();
+//         sendResponse("ok");
+//     }
+//     if (message === 'getGroup') {
+//         chrome.storage.sync.get(["allLiveGroups"], function (result) {
+//             console.log('Value currently is ' + result);
+//             allLiveGroups = result;
+//             sendResponse(allLiveGroups);
+//         });
+//     }
+// });
+
+// //保存
+// function saveAllLiveGroup() {
+//     // chrome.storage.sync.set({
+//     //     "allLiveGroups": allLiveGroups
+//     // }, function () {
+//     //     console.log('Value is set to ' + value);
+//     // });
+// }
