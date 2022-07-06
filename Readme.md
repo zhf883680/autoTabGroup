@@ -13,3 +13,5 @@ edge扩展安装:[标签页自动分组](https://microsoftedge.microsoft.com/add
 ## 更新说明
 ### 2021.10.13
 初始版本
+### 2022.7.6
+固定标签页不做分组
