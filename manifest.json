@@ -1,13 +1,13 @@
 {
     "name": "__MSG_appName__",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "icons": {
         "16": "img/robot.png",
         "48": "img/robot.png",
         "128": "img/robot.png"
     },
     "description": "__MSG_extDesc__",
-    "manifest_version": 4,
+    "manifest_version": 3,
     "background": {
       "service_worker": "background.js"
     },
