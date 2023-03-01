@@ -1,6 +1,32 @@
 /**
  * 监听tab创建
  */
+let extensionTypeDefault="tab";
+chrome.storage.local.get(["extensionType"]).then((result) => {
+    console.log("get " + JSON.stringify(result));
+    if(result.extensionType!=undefined){
+        extensionTypeDefault=result.extensionType
+    }
+  });
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    switch (request.action){
+        case "getData":{
+            sendResponse({data:extensionTypeDefault});
+            return true;
+        }break;
+        case "setData":{
+            console.log("request " + request.value);
+            //保存值
+            chrome.storage.local.set({ "extensionType": request.value }).then(() => {
+                console.log("set " + request.value);
+              });
+        }break;
+    }
+	sendResponse({data:data});
+});
+
+
+
 chrome.tabs.onCreated.addListener(function (tab) {
     createGroup(tab);
 })
@@ -19,9 +45,11 @@ function createGroup(tab) {
     //获取窗口id 防止乱跳
     chrome.windows.getCurrent(function (currentWindow) {
         //获取当前所有标签组
+        console.debug(`WinId:${currentWindow.id}`)
         chrome.tabGroups.query({
             windowId: currentWindow.id
         }, function (groups) {
+            console.debug("tab");
             console.debug(tab);
             if (tab.url == "" || tab.pinned || tab.status == "complete") {
                 return;
@@ -31,6 +59,7 @@ function createGroup(tab) {
             if (tab.groupId != -1) {
                 chrome.tabGroups.get(tab.groupId,
                     function (group) {
+                        console.debug("group");
                         console.debug(group);
                         if (group.title.indexOf(" (auto)") < 0) {
                             return;
@@ -50,88 +79,165 @@ function createGroup(tab) {
     });
 }
 function createGroupReal(tab,groups,currentWindow){
-    try {
-        const urlHead = tab.url.split("/")[0];
-        console.debug(urlHead)
-        //获取tab对应的域名
-        const host = tab.url.split("/")[2].split(":")[0];
-        let domain = "";
-        //针对设置页面特殊处理
-        if (urlHead == "edge:" || urlHead == "chrome:" || urlHead.indexOf("extension:") > -1 || urlHead.indexOf("file:") > -1) {
-            domain = "~ " + urlHead.substring(0, urlHead.length - 1);
-        } else if (urlHead == "http:" || urlHead == "https:") {
-            //正常页面
-            const domainArr = host.split(".")
-            if (domainArr.length == 1) {
-                domain = domainArr[0];
-            }
-            if (domainArr.length >= 2) {
-
-                domain = `${domainArr[domainArr.length - 2]}.${domainArr[domainArr.length - 1]}`;
-                //特殊处理
-                //例如谷歌搜索,百度搜索为一类 其他为另一类
-                if (tab.url.indexOf("www.google.com") > -1 || tab.url.indexOf("www.baidu.com") > -1) {
-                    //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
-                    domain = "~ search"
+    if(extensionTypeDefault=="url"){
+        try {
+            const urlHead = tab.url.split("/")[0];
+            console.debug(urlHead)
+            //获取tab对应的域名
+            const host = tab.url.split("/")[2].split(":")[0];
+            let domain = "";
+            //针对设置页面特殊处理
+            if (urlHead == "edge:" || urlHead == "chrome:" || urlHead.indexOf("extension:") > -1 || urlHead.indexOf("file:") > -1) {
+                domain = "~ " + urlHead.substring(0, urlHead.length - 1);
+            } else if (urlHead == "http:" || urlHead == "https:") {
+                //正常页面
+                const domainArr = host.split(".")
+                if (domainArr.length == 1) {
+                    domain = domainArr[0];
                 }
-                //org.cn  com.cn之类统一处理
-                if (domainArr[domainArr.length - 1] == "cn" && domainArr.length > 3) {
-                    domain = `${domainArr[domainArr.length - 3]}.${domainArr[domainArr.length - 2]}`;
-                }
-            }
-        } else {
-            domain = "~ UnKnow"
-        }
-        domain = domain + " (auto)"
-        //检查是否有旧group
-        const nowGroup = groups.find(a => a.title == domain);
-        console.debug("开始设置组")
-        //无旧组
-        if (nowGroup == undefined) {
-            chrome.tabs.group({
-                createProperties: {
-                    windowId: currentWindow.id,
-                },
-                tabIds: tab.id
-            }, function (groupId) {
-                console.debug("开始调整创建组")
-                //将此group设置标题和颜色
-                chrome.tabGroups.update(groupId, {
-                    color: colors[parseInt(Math.random() * 10)],
-                    title: domain,
-                });
-                //将组别排序
-                //系统级别最先
-                //其次是搜索
-                //其次从a-z排序
-                console.debug("开始排序组")
-                chrome.tabGroups.query({
-                    windowId: currentWindow.id
-                }).then((groups) => {
-                    let nowGroup = JSON.parse(JSON.stringify(groups));
-                    nowGroup.sort(sortBy("title", false, String))
-                    console.debug("开始移动组")
-                    for (let i = 0; i < nowGroup.length; i++) {
-                        console.debug(nowGroup[i]);
-                        chrome.tabGroups.move(nowGroup[i].id, {
-                            index: -1
-                        });
+                if (domainArr.length >= 2) {
+    
+                    domain = `${domainArr[domainArr.length - 2]}.${domainArr[domainArr.length - 1]}`;
+                    //特殊处理
+                    //例如谷歌搜索,百度搜索为一类 其他为另一类
+                    if (tab.url.indexOf("www.google.com") > -1 || tab.url.indexOf("www.baidu.com") > -1) {
+                        //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
+                        domain = "~ search"
                     }
+                    //org.cn  com.cn之类统一处理
+                    if (domainArr[domainArr.length - 1] == "cn" && domainArr.length > 3) {
+                        domain = `${domainArr[domainArr.length - 3]}.${domainArr[domainArr.length - 2]}`;
+                    }
+                }
+            } else {
+                domain = "~ UnKnow"
+            }
+            domain = domain + " (auto)"
+            //检查是否有旧group
+            const nowGroup = groups.find(a => a.title == domain);
+            console.debug("开始设置组")
+            //无旧组
+            if (nowGroup == undefined) {
+                chrome.tabs.group({
+                    createProperties: {
+                        windowId: currentWindow.id,
+                    },
+                    tabIds: tab.id
+                }, function (groupId) {
+                    console.debug("开始调整创建组")
+                    //将此group设置标题和颜色
+                    chrome.tabGroups.update(groupId, {
+                        color: colors[parseInt(Math.random() * 10)],
+                        title: domain,
+                    });
+                    //将组别排序
+                    //系统级别最先
+                    //其次是搜索
+                    //其次从a-z排序
+                    console.debug("开始排序组")
+                    chrome.tabGroups.query({
+                        windowId: currentWindow.id
+                    }).then((groups) => {
+                        let nowGroup = JSON.parse(JSON.stringify(groups));
+                        nowGroup.sort(sortBy("title", false, String))
+                        console.debug("开始移动组")
+                        for (let i = 0; i < nowGroup.length; i++) {
+                            console.debug(nowGroup[i]);
+                            chrome.tabGroups.move(nowGroup[i].id, {
+                                index: -1
+                            });
+                        }
+                    })
                 })
-            })
-        } else {
-            //有就组
-            console.debug("直接更新")
-            chrome.tabs.group({
-                groupId: nowGroup.id,
-                tabIds: tab.id
-            })
+            } else {
+                //有就组
+                console.debug("直接更新")
+                chrome.tabs.group({
+                    groupId: nowGroup.id,
+                    tabIds: tab.id
+                })
+            }
+    
+    
+        } catch (e) {
+            console.error(e)
         }
-
-
-    } catch (e) {
-        console.error(e)
     }
+    else if(extensionTypeDefault=="tab"){
+        if(tab.url.indexOf("edge:")>-1||tab.url.indexOf("chrome:")>-1)
+        {
+            return true;
+        }
+        try {
+            console.debug("openerTabId")
+            console.debug(tab.openerTabId)
+            if(tab.openerTabId==undefined){
+                chrome.tabs.group({
+                    createProperties: {
+                        windowId: currentWindow.id,
+                    },
+                    tabIds: tab.id
+                }, function (groupId) {
+                    console.debug("开始调整创建组")
+                    //将此group设置标题和颜色
+                    chrome.tabGroups.update(groupId, {
+                        color: colors[parseInt(Math.random() * 10)],
+                        title: dateFormat("HH:MM:SS", new Date())
+                    });
+                })
+            }
+            else{
+                //找到前标签页所在组
+                chrome.tabs.group({
+                    createProperties: {
+                        windowId: currentWindow.id,
+                    },
+                    tabIds:tab.openerTabId
+                }, function (groupId) {
+                    console.debug("groupId")
+                    console.log(groupId)
+                        console.debug("现有组")
+                        chrome.tabs.group({
+                            groupId: groupId,
+                            tabIds: tab.id
+                        },function(groupId){
+                            chrome.tabGroups.get(groupId,
+                                function (group) {
+                                    if (group.title=="") {
+                                        chrome.tabGroups.update(groupId, {
+                                            title: dateFormat("HH:MM:SS", new Date())
+                                        });
+                                    }
+                                   
+                                }
+                            )
+                        })
+                });
+            }
+            
+        } catch (e) {
+            console.error(e)
+        }
+    }
+}
+function dateFormat(fmt, date) {
+    let ret;
+    const opt = {
+        "Y+": date.getFullYear().toString(),        // 年
+        "m+": (date.getMonth() + 1).toString(),     // 月
+        "d+": date.getDate().toString(),            // 日
+        "H+": date.getHours().toString(),           // 时
+        "M+": date.getMinutes().toString(),         // 分
+        "S+": date.getSeconds().toString()          // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+    };
+    for (let k in opt) {
+        ret = new RegExp("(" + k + ")").exec(fmt);
+        if (ret) {
+            fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+        };
+    };
+    return fmt;
 }
 //排序函数
 var sortBy = function (filed, rev, primer) {

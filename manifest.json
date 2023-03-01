@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "icons": {
         "16": "img/robot.png",
         "48": "img/robot.png",
@@ -13,10 +13,11 @@
     },
     "action": {
         "default_title": "__MSG_extMore__",
-        "default_icon": "img/robot.png"
+        "default_icon": "img/robot.png",
+        "default_popup": "popup.html"
     },
     "permissions":[
-        "tabGroups","tabs"
+        "tabGroups","tabs","storage"
     ],
     "default_locale":"zh_CN"
   }
