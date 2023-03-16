@@ -16,7 +16,6 @@ chrome.runtime.sendMessage({action:"getData"}, (response) => {
 //变更值
 document.getElementById("btnSave").addEventListener("click", function () {
     chrome.runtime.sendMessage({action:"setData",value:document.querySelector('input[name="groupBy"]:checked').value}, (response) => {
-
     });
 })
 
