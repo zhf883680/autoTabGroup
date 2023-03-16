@@ -1,7 +1,7 @@
 ## 效果图
-![效果图片](./readme/effects.gif)  
+![url模式](./readme/url.gif)  
 ![设置](./readme/settings.png)  
-![模式二](./readme/tab.png) 
+![tab模式](./readme/tab.gif) 
 
 ## 使用  
 git 下载此项目 或者release中下载压缩包  
@@ -11,7 +11,8 @@ git 下载此项目 或者release中下载压缩包
 ## 网页使用
 不会对已有的标签页进行整理  
 请打开新标签页使用  
-edge扩展安装:[标签页自动分组](https://microsoftedge.microsoft.com/addons/detail/%E6%A0%87%E7%AD%BE%E9%A1%B5%E8%87%AA%E5%8A%A8%E5%88%86%E7%BB%84/hifeijficcakiokpfabdflnjdbihofdd)
+edge扩展安装:[标签页自动分组](https://microsoftedge.microsoft.com/addons/detail/%E6%A0%87%E7%AD%BE%E9%A1%B5%E8%87%AA%E5%8A%A8%E5%88%86%E7%BB%84/hifeijficcakiokpfabdflnjdbihofdd)  
+若无法切换模式,请关闭所有标签页后重新打开浏览器重试  
 ## 更新说明
 ### 2023.3.16
 1. 优化代码
@@ -33,4 +34,4 @@ edge扩展安装:[标签页自动分组](https://microsoftedge.microsoft.com/add
 
 
 ### 2021.10.13
-初始版本
+1. 初始版本
