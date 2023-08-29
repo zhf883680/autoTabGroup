@@ -69,27 +69,7 @@ async function setGroup(tab) {
     }
     else {
         createGroupReal(tab, groups, currentWindow);
-        //新标签页独立分组
-        // if (tab.url.startsWith("edge://newtab") || tab.url.startsWith("chrome://newtab")) {
-        //     createGroupReal(tab, groups, currentWindow);
-        // }
-        // else{
-
-        // //仅当无分组时候,且走的不是标签页模式 才分组
-        // if (tab.groupId == -1) {
-        //     createGroupReal(tab, groups, currentWindow);
-        // }
     }
-
-    // if (tab.groupId != -1) {
-    //     //获取标签组信息
-    //     const thisGroup = await chrome.tabGroups.get(tab.groupId);
-    //     if (thisGroup.title.indexOf(" (auto)") < 0) {
-    //         return;
-    //     }
-    // }
-    // //开始分组
-    // createGroupReal(tab, groups, currentWindow);
 }
 async function createGroupReal(tab, groups, currentWindow) {
     if (extensionTypeDefault == "url") {
@@ -171,66 +151,10 @@ async function createGroupReal(tab, groups, currentWindow) {
                             groupId: openerTab.groupId,
                             tabIds: tab.id
                         })
-                        // //防止组名为空 设置组名
-                        // const groupInfo = await chrome.tabGroups.get(openerTab.groupId);
-                        // if (groupInfo.title == "") {
-                        //     const domain = getDomain(tab);
-                        //     chrome.tabGroups.update(openerTab.groupId, {
-                        //         title: domain
-                        //     });
-                        // }
                     }
 
                 }
-
-                // //由于新标签页默认算上一个标签页打开的 此处处理
-                // if ((tab.groupId == -1 || tab.groupId == undefined)&&tab.openerTabId!=undefined) {
-                //     await realCreateGroup(currentWindow, tab);
-                //     tab = await chrome.tabs.get(tab.id);
-                //     await chrome.tabs.group({
-                //         groupId: tab.groupId,
-                //         tabIds: tab.openerTabId
-                //     })
-                // }
-                // else{
-
-                // }
             }
-            // if (tab.openerTabId == undefined) {
-            //     //创建组
-            //     realCreateGroup(currentWindow, tab);
-            // }
-            // else {
-            //     //查询之前标签页信息
-            //     let openerTab = await chrome.tabs.get(tab.openerTabId);
-            //     //判断是否有组
-            //     if (openerTab.groupId == -1) {
-            //         //创建组
-            //         await realCreateGroup(currentWindow, openerTab);
-            //         //设置打开的标签页的分组
-            //         openerTab = await chrome.tabs.get(tab.openerTabId);
-            //         await chrome.tabs.group({
-            //             groupId: openerTab.groupId,
-            //             tabIds: tab.id
-            //         })
-            //     }
-            //     else {
-            //         //设定组
-            //         await chrome.tabs.group({
-            //             groupId: openerTab.groupId,
-            //             tabIds: tab.id
-            //         })
-            //         // //防止组名为空 设置组名
-            //         // const groupInfo = await chrome.tabGroups.get(openerTab.groupId);
-            //         // if (groupInfo.title == "") {
-            //         //     const domain = getDomain(tab);
-            //         //     chrome.tabGroups.update(openerTab.groupId, {
-            //         //         title: domain
-            //         //     });
-            //         // }
-            //     }
-
-            // }
         } catch (e) {
             console.error(e)
         }
