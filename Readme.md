@@ -13,6 +13,11 @@ git 下载此项目 或者release中下载压缩包
 请打开新标签页使用  
 edge扩展安装:[标签页自动分组](https://microsoftedge.microsoft.com/addons/detail/%E6%A0%87%E7%AD%BE%E9%A1%B5%E8%87%AA%E5%8A%A8%E5%88%86%E7%BB%84/hifeijficcakiokpfabdflnjdbihofdd)  
 若无法切换模式,请关闭所有标签页后重新打开浏览器重试  
+## todo
+1. 颜色自定义
+2. 功能菜单
+
+
 ## 更新说明
 ### 2023.3.16
 1. 优化代码
