@@ -225,7 +225,7 @@ function getDomain(tab) {
             //例如谷歌搜索,百度搜索为一类 其他为另一类
             if (tab.url.indexOf("www.google.com") > -1 || tab.url.indexOf("www.baidu.com") > -1) {
                 //domain = `${domainArr[domainArr.length-3]}.${domainArr[domainArr.length-2]}.${domainArr[domainArr.length-1]}`;
-                domain = "~ search"
+                domain = "search"
             }
             //org.cn  com.cn之类统一处理
             if (domainArr[domainArr.length - 1] == "cn" && domainArr.length > 3) {
@@ -233,7 +233,7 @@ function getDomain(tab) {
             }
         }
     } else {
-        domain = "~ UnKnow"
+        domain = "UnKnow"
     }
     domain = domain + " (auto)"
     return domain
