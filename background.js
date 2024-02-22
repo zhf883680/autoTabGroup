@@ -127,31 +127,36 @@ async function createGroupReal(tab, groups, currentWindow) {
                 await realCreateGroup(currentWindow, tab);
             }
             else {
-                if (tab.openerTabId == undefined) {
+                let openerTab = await chrome.tabs.get(tab.openerTabId);
+                //打开标签的标签没有组
+                if (tab.openerTabId == undefined||openerTab.pinned) {
                     //创建组
                     realCreateGroup(currentWindow, tab);
                 }
                 else {
-                    //查询之前标签页信息
-                    let openerTab = await chrome.tabs.get(tab.openerTabId);
-                    //判断是否有组
-                    if (openerTab.groupId == -1) {
-                        //创建组
-                        await realCreateGroup(currentWindow, openerTab);
-                        //设置打开的标签页的分组
-                        openerTab = await chrome.tabs.get(tab.openerTabId);
-                        await chrome.tabs.group({
-                            groupId: openerTab.groupId,
-                            tabIds: tab.id
-                        })
-                    }
-                    else {
-                        //设定组
-                        await chrome.tabs.group({
-                            groupId: openerTab.groupId,
-                            tabIds: tab.id
-                        })
-                    }
+                    //如果打开的标签页
+                   
+                        //查询之前标签页信息
+                        let openerTab = await chrome.tabs.get(tab.openerTabId);
+                        //判断是否有组
+                        if (openerTab.groupId == -1) {
+                            //创建组
+                            await realCreateGroup(currentWindow, openerTab);
+                            //设置打开的标签页的分组
+                            openerTab = await chrome.tabs.get(tab.openerTabId);
+                            await chrome.tabs.group({
+                                groupId: openerTab.groupId,
+                                tabIds: tab.id
+                            })
+                        }
+                        else {
+                            //设定组
+                            await chrome.tabs.group({
+                                groupId: openerTab.groupId,
+                                tabIds: tab.id
+                            })
+                        }
+                    
 
                 }
             }
