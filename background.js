@@ -27,20 +27,92 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 });
 
-
-
 chrome.tabs.onCreated.addListener(function (tab) {
-    setGroup(tab);
-})
+  setGroup(tab);
+});
 /**
  * 监听tab页面变化(用于处理页面logo问题)
  */
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-    //仅url变化才除法事件
-    if (changeInfo.url != undefined) {
-        setGroup(tab);
-    }
+  console.log(changeInfo)
+  //仅url变化才除法事件
+  if (changeInfo.url != undefined) {
+    setGroup(tab);
+  }
+  if (changeInfo.pinned) {
+    //记录标签页 当取消固定的时候  移除记录的值 
+    //当设置标签页分组的时候 需要判断是否是固定的标签页
+
+    //console.log(changeInfo)
+    //setGroup(tab);
+        // 将固定的标签页记录下来
+        recordPinnedTab(tab);
+
+        // 在取消固定时移除记录
+        if (!tab.pinned) {
+          removePinnedTab(tab);
+        }
+
+  }
+  console.log(pinnedUrls);
 });
+// 记录固定的标签页到 localStorage
+async function recordPinnedTab(tab) {
+  chrome.storage.local.get({ pinnedTabs: [] }, function (result) {
+    const pinnedTabs = result.pinnedTabs;
+    if (!pinnedTabs.includes(tab.url)) {
+      pinnedTabs.push(tab.url);
+      pinnedUrls=pinnedTabs;
+      chrome.storage.local.set({ pinnedTabs: pinnedTabs }, function () {
+        console.log("记录标签页:", tab.url);
+      });
+    }
+  });
+}
+let pinnedUrls=[];
+// 移除 localStorage 中的固定标签页
+async function removePinnedTab(tab) {
+  chrome.storage.local.get({ pinnedTabs: [] }, function (result) {
+    const pinnedTabs = result.pinnedTabs;
+    const updatedPinnedTabs = pinnedTabs.filter(id => id !== tab.url);
+    pinnedUrls=updatedPinnedTabs;
+    chrome.storage.local.set({ pinnedTabs: updatedPinnedTabs }, function () {
+      console.log("移除记录的标签页:", tab.url);
+    });
+  });
+}
+// 等待函数
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+// 在浏览器启动时，打开之前固定的标签页
+chrome.runtime.onStartup.addListener(function () {
+   openPinnedTabs();
+});
+
+// 在安装或首次运行扩展时，打开固定标签页
+chrome.runtime.onInstalled.addListener(function () {
+  openPinnedTabs();
+});
+
+// 打开固定标签页的函数
+async function openPinnedTabs() {
+  const result = await chrome.storage.local.get({ pinnedTabs: [] });
+  pinnedUrls = result.pinnedTabs;
+  await wait(500);
+  // 获取当前已打开标签页的 URL
+  const tabs = await chrome.tabs.query({});
+  const openUrls = tabs.map(tab => tab.url);
+  
+  for (const url of pinnedUrls) {
+    if (!openUrls.includes(url)) {
+      await chrome.tabs.create({ url: url, pinned: true });
+      console.log("已打开固定标签页:", url);
+      // 等待 500 毫秒再打开下一个标签页
+      await wait(500);
+    }
+  }
+}
 const colors = ["grey", "blue", "yellow", "red", "green", "pink", "purple", "orange"]
 //const specialUrl = ["www.google.com", "www.baidu.com"] //特殊处理的地址
 async function setGroup(tab) {
